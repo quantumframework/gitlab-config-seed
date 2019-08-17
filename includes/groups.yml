@@ -1,0 +1,14 @@
+---
+- name: "created GitLab group"
+  with_items: "{{ gitlab_groups }}"
+  loop_control:
+    loop_var: spec
+  gitlab_group:
+    server_url: "{{ gitlab_api_url|mandatory }}"
+    api_token: "{{ gitlab_api_token|mandatory }}"
+    validate_certs: "{{ gitlab_validate_certs|default(False) }}"
+    state: "{{ spec.state|default('present') }}"
+    name: "{{ spec.name|mandatory }}"
+    description: "{{ spec.description|mandatory }}"
+    path: "{{ spec.path|mandatory }}"
+    visibility: "{{ spec.visibility|default('private') }}"

@@ -1,0 +1,31 @@
+---
+- hosts: localhost
+  gather_facts: false
+  environment:
+    # Clear the PYTHONPATH variable so that Ansible Tower doesn't
+    # mix Python 2 modules with Python 3 modules (causes the enum
+    # module to be of the wrong version and fail import of re).
+    PYTHONPATH: ""
+  tasks:
+  - name: include user-defined tasks
+    include_tasks: user.yml
+
+  - name: include GitLab group definitions
+    with_filetree: vars/groups
+    when: >-
+      item.state == 'file'
+      and item.path != '.gitkeep'
+      and not item.path.endswith('.example')
+    include_tasks: includes/groups.yml
+    vars:
+      gitlab_groups: "{{ lookup('template', item.src)|from_yaml_all|list }}"
+
+  - name: include GitLab project definitions
+    with_filetree: vars/projects
+    when: >-
+      item.state == 'file'
+      and item.path != '.gitkeep'
+      and not item.path.endswith('.example')
+    include_tasks: includes/projects.yml
+    vars:
+      gitlab_projects: "{{ lookup('template', item.src)|from_yaml_all|list }}"

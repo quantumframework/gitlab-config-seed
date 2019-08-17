@@ -1,0 +1,43 @@
+---
+- name: created GitLab project
+  with_items: "{{ gitlab_projects }}"
+  loop_control:
+    loop_var: spec
+  gitlab_project:
+    server_url: "{{ gitlab_api_url|mandatory }}"
+    api_token: "{{ gitlab_api_token }}"
+    validate_certs: "{{ gitlab_validate_certs|default(False) }}"
+    state: "{{ spec.state|default('present') }}"
+    name: "{{ spec.name|mandatory }}"
+    description: "{{ spec.description|mandatory }}"
+    visibility: "{{ spec.visibility|default('private') }}"
+    group: "{{ spec.group|mandatory }}"
+    issues_enabled: "{{ spec.issues_enabled|default(False) }}"
+    wiki_enabled: "{{ spec.wiki_enabled|default(False) }}"
+    snippets_enabled: "{{ spec.snippets_enabled|default(False) }}"
+    merge_requests_enabled: "{{ spec.merge_requests_enabled }}"
+    import_url: "{{ spec.import_url|default(None) }}"
+
+- name: create webhooks
+  with_items: "{{ gitlab_projects }}"
+  when: spec.hook is defined
+  loop_control:
+    loop_var: spec
+  gitlab_hook:
+    api_url: "{{ gitlab_api_url|mandatory }}"
+    api_token: "{{ gitlab_api_token }}"
+    validate_certs: "{{ gitlab_validate_certs|default(False) }}"
+    state: "{{ spec.hook.state|default('present') }}"
+    hook_validate_certs: "{{ gitlab_validate_certs|default(False) }}"
+    hook_url: "{{ spec.hook.url|mandatory }}"
+    #token: "{{ spec.hook.token|default(None) }}"
+    project: "{{ spec.group }}/{{ spec.name }}"
+    issues_events: "{{ spec.hook.issues_events|default(False) }}"
+    job_events: "{{ spec.hook.job_events|default(False) }}"
+    merge_requests_events: "{{ spec.hook.merge_requests_events|default(False) }}"
+    note_events: "{{ spec.hook.note_events|default(False) }}"
+    pipeline_events: "{{ spec.hook.pipeline_events|default(False) }}"
+    push_events: "{{ spec.hook.push_events|default(False) }}"
+    tag_push_events: "{{ spec.hook.tag_push_events|default(False) }}"
+    wiki_page_events: "{{ spec.hook.wiki_page_events|default(False) }}"
+
