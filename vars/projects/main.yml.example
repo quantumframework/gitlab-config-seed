@@ -1,0 +1,11 @@
+---
+name: test
+description: foo
+group: foo
+issues_enabled: false
+wiki_enabled: false
+snippets_enabled: false
+merge_requests_enabled: false
+hook:
+  url: https://www.example.com
+  token: foo

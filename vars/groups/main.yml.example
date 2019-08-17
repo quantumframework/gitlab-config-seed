@@ -1,0 +1,9 @@
+---
+name: foo
+description: Infrastructure Service Delivery
+path: foo
+
+---
+name: bar
+description: Infrastructure Service Delivery
+path: bar
